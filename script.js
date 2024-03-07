@@ -9,9 +9,14 @@ window.addEventListener("scroll", function() {
         header.style.backgroundColor = "#2b7a78";
     } else {
         header.classList.remove("sticky");
-        header.style.backgroundColor = "transparent";
+        if(window.innerWidth < 1920){
+            header.style.backgroundColor = "#2b7a78";
+        }
+        else{
+            header.style.backgroundColor = "transparent";
+        }
     }
-})
+});
 
 let menu = document.querySelector('#menu-icon');
 let navlist = document.querySelector('.navlist');
