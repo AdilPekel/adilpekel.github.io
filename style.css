@@ -699,8 +699,24 @@ footer{
     .main-content p{
         width: 100%;
     }
-    .social a:active::before{
-        scale: 1 0;
+    .social:hover a::before{
+        scale: 0 0;
+    }
+    .social a:hover .ri-linkedin-fill{
+        color: #000;
+        transform: rotateY(360deg);
+    }
+    .social a:hover .ri-github-fill{
+        color: #000;
+        transform: rotateY(360deg);
+    }
+    .social a:hover .ri-instagram-line{
+        color: #000;
+        transform: rotateY(360deg);
+    }
+    .social a:hover .ri-file-pdf-2-line{
+        color: #000;
+        transform: rotateY(360deg);
     }
 }
 
