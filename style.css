@@ -21,7 +21,7 @@
 }
 
 .darkmode{
-    --text-color: #3AAFA9;
+    --text-color: #17252a;
     --bg-color: #17252A;
     --second-bg-color: #2B7A78;
     --main-color: #FEFFFF;
@@ -556,6 +556,124 @@ header.sticky{
     margin: 16px 0;
 }
 
+.contact{
+    padding-bottom: 0;
+}
+
+.contact-container{
+    position: relative;
+    grid-template-rows: 300px max-content max-content;
+    row-gap: 0;
+}
+
+.contact-title{
+    color: var(--bg-color);
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.contact-mail{
+    position: relative;
+    background-color: var(--second-bg-color);
+    padding: 5rem 1.5rem 2.5rem;
+    margin-top: -2.5rem;
+    transition: background-color 0.50s;
+    border-radius: 8px;
+}
+
+.contact-form, .contact-group{
+    display: grid;
+    row-gap: 1.25rem;
+}
+
+.contact-form{
+    position: relative;
+}
+
+.contact-input, .contact-button{
+    outline: none;
+    border: none;
+}
+
+.contact-input{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: var(--second-bg-color);
+    border: 3px solid var(--text-color);
+    color: var(--bg-color);
+    padding: 0.5rem 1rem;
+    transition: border 0.50s, background-color .50s;
+    border-radius: 8px;
+}
+
+.contact-input::placeholder{
+    color: var(--bg-color);
+    transition: opacity 0.50s;
+}
+
+.contact-input:focus{
+    border: 3px solid var(--bg-color);
+}
+
+.contact-input:-webkit-autofill{
+    transition: background-color 6000s, color 6000s;
+}
+
+.contact-label{
+    position: absolute;
+    top: 8px;
+    left: 10px;
+    color: var(--bg-color);
+    font-size: 1rem;
+    background-color: var(--second-bg-color);
+    padding: 8px;
+    pointer-events: none;
+    transition: top .50s, opacity .50s, background-color .50s;
+    opacity: 0;
+}
+
+.contact-form .contact-area{
+    height: 10rem;
+}
+
+.contact-area textarea{
+    resize: none;
+    padding-top: 1rem;
+}
+
+.contact-button{
+    background-color: var(--bg-color);
+    cursor: pointer;
+    width: 100%;
+    height: 50px;
+    color: var(--second-bg-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all .50s ease;
+}
+
+.contact-button:hover{
+    scale: 1.01;
+    transition: all .50s ease;
+}
+
+.contact-input:focus::placeholder{
+    opacity: 0;
+}
+
+.contact-input:focus + .contact-label, .contact-input:not(:placeholder-shown).contact-input:not(:focus) + .contact-label{
+    opacity: 1;
+    top: -16px;
+}
+
+.contact-box{
+    position: relative;
+    width: 100%;
+    height: 58px;
+}
+
 footer{
     background-color: #17252A;
 }
@@ -689,9 +807,11 @@ footer{
         padding: 17px;
         font-size: 22px;
         color: var(--bg-color);
+        transition: all .50s ease;
     }
     .navlist.active{
         right: 0;
+        transition: all .50s ease;
     }
 }
 
@@ -734,4 +854,5 @@ footer{
         object-fit: cover;
         margin: 0 auto;
     }
+    
 }
