@@ -699,6 +699,9 @@ footer{
     .main-content p{
         width: 100%;
     }
+    .social a:active::before{
+        scale: 1 0;
+    }
 }
 
 @media (max-width: 470px){
