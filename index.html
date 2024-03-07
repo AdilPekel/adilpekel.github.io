@@ -39,7 +39,7 @@
         </ul>
 
         <div class="top-btnn">
-            <a href="#" class="h-btn">Contact me</a>
+            <a href="#contact" class="h-btn">Contact me</a>
         </div>
     </header>
     <!--hero-->
@@ -207,6 +207,39 @@
                         </div>
                     </li>
                 </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact-section" id="contact">
+        <div class="contact-container-grid">
+            <div class="contact-mail">
+                <h2 class="contact-title">
+                    Send me a Message
+                </h2>
+                <form action="" class="contact-form" id="contact-form">
+                    <div class="contact-group">
+                        <div class="contact-box">
+                            <input type="text" name="user-name" class="contact-input" id="name" required placeholder="First Name">
+                            <label for="name" class="contact-label">First Name</label>
+                        </div>
+                        <div class="contact-box">
+                            <input type="email" name="user-email" class="contact-input" id="email" required placeholder="Email Address">
+                            <label for="email" class="contact-label">Email Address</label>
+                        </div>
+                    </div>
+                    <div class="contact-box">
+                        <input type="text" name="user-subject" class="contact-input" id="subject" required placeholder="Subject">
+                        <label for="subject" class="contact-label">Subject</label>
+                    </div>
+                    <div class="contact-box contact-area">
+                        <textarea name="user-message" id="message" class="contact-input" required placeholder="Message"></textarea>
+                        <label for="message" class="contact-label">Message</label>
+                    </div>
+                    <button type="submit" class="contact-button button">
+                        <i class="ri-mail-send-line"></i> Send Message
+                    </button>
+                </form>
             </div>
         </div>
     </section>
