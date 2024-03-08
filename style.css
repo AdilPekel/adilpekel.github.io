@@ -674,6 +674,14 @@ header.sticky{
     height: 58px;
 }
 
+.contact-message{
+    color: var(--bg-color);
+    font-size: 1rem;
+    position: absolute;
+    bottom: -1.6rem;
+    left: 0;
+}
+
 footer{
     background-color: #17252A;
 }
