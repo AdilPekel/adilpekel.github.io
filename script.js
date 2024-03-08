@@ -31,6 +31,28 @@ window.onscroll = () => {
     navlist.classList.remove('active');
 };
 
+const contactForm = document.getElementById('contact-form'),
+      contactMessage = document.getElementById('contact-message')
+
+const sendEmail = (e) => {
+    e.preventDefault()
+
+    emailjs.sendForm('service_ct2chwi','template_l55v2zw','#contact-form','1PLLFLa6GY2Q_o5x8')
+    .then(() => {
+        contactMessage.textContent = 'Message Sent!'
+
+        setTimeout(() => {
+            contactMessage.textContent = ''
+        }, 5000)
+
+        contactForm.reset()
+    }, () => {
+        contactMessage.textContent = 'Message Failed to Send.'
+    })
+}
+
+contactForm.addEventListener('submit', sendEmail)
+
 const wrapper = document.querySelector(".wrapper");
 const carousel = document.querySelector(".carousel");
 const firstCardWidth = carousel.querySelector(".card").offsetWidth;
