@@ -506,6 +506,21 @@ header.sticky{
     overflow: hidden;
 }
 
+.project-wrapper::after{
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 2px solid white;
+    border-radius: inherit;
+    opacity: 0;
+    transition: 0.5s ease-in-out;
+}
+
+.project-wrapper:hover::after{
+    opacity: 1;
+    inset: 15px;
+}
+
 .project-wrapper:hover .project-description{
     opacity: 1;
     transform: translateY(-50%);
@@ -517,6 +532,7 @@ header.sticky{
 }
 
 .project-description{
+    text-align: center;
     left: 5%;
     right: 5%;
     position: absolute;
@@ -544,16 +560,44 @@ header.sticky{
     visibility: hidden;
 }
 
+.project-description-title,
+.project-description-subtitle,
+.project-description-para{
+    opacity: 0;
+    transition: 0.5s 0.2 ease;
+}
+
 .project-description-title{
+    scale: 0.7;
     font-size: 2rem;
+    transition: all 0.5s 0.2s ease;
 }
 
 .project-description-subtitle{
     margin-top: 8px;
+    transition: all 0.5s 0.2s ease;
 }
 
 .project-description-para{
     margin: 16px 0;
+    line-height: 1.5;
+    transform: translateY(50%);
+    transition: all 0.5s 0.2s ease;
+}
+
+.project-wrapper:hover .project-description-title{
+    scale: 1;
+    opacity: 1;
+}
+
+.project-wrapper:hover .project-description-subtitle{
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.project-wrapper:hover .project-description-para{
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .contact{
