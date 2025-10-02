@@ -83,13 +83,6 @@ export default function App() {
     { date: "2021", title: "First Dev Role", desc: "Started journey", grade: "V2" },
   ];
 
-  const links = [
-    { icon: Download,  label: "Resume",   shape: JugHold,   href: "/resume.pdf" },
-    { icon: Instagram, label: "Instagram",shape: PinchHold, href: "https://instagram.com/_apekel_" },
-    { icon: Linkedin,  label: "LinkedIn", shape: SlopeHold, href: "https://www.linkedin.com/in/adilpekel" },
-    { icon: Github,    label: "GitHub",   shape: PocketHold,href: "https://github.com/AdilPekel" },
-  ];
-
   // ---------- SVG Hold Shapes (with bolt holes & shading) ----------
   const Bolt: React.FC<{ cx: number; cy: number; r?: number }> = ({ cx, cy, r = 3 }) => (
     <>
@@ -183,6 +176,13 @@ export default function App() {
   );
 
   const holdShapes = [JugHold, CrimpHold, SlopeHold, PinchHold, PocketHold, VolumeHold];
+
+  const links = [
+    { icon: Download,  label: "Resume",   shape: JugHold,   href: "/resume.pdf" },
+    { icon: Instagram, label: "Instagram",shape: PinchHold, href: "https://instagram.com/_apekel_" },
+    { icon: Linkedin,  label: "LinkedIn", shape: SlopeHold, href: "https://www.linkedin.com/in/adilpekel" },
+    { icon: Github,    label: "GitHub",   shape: PocketHold,href: "https://github.com/AdilPekel" },
+  ];
 
   // Hero background holds with parallax translate + spin
   const bgHolds = useMemo(
