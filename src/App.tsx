@@ -58,6 +58,14 @@ export default function App() {
     { id: "timeline", label: "Journey", color: "from-amber-400 to-amber-500" },
     { id: "contact", label: "Contact", color: "from-violet-400 to-violet-500" },
   ];
+  
+  const holdHoverColor: Record<string, string> = {
+    home:    "group-hover:text-emerald-400",
+    about:   "group-hover:text-sky-400",
+    skills:  "group-hover:text-fuchsia-400",
+    timeline:"group-hover:text-amber-300",
+    contact: "group-hover:text-violet-400",
+  };
 
   const skills = [
     { name: "React", icon: Code },
@@ -73,6 +81,13 @@ export default function App() {
     { date: "2023", title: "Full Stack Project", desc: "Built SaaS platform", grade: "V5" },
     { date: "2022", title: "Open Source", desc: "Major contributor", grade: "V4" },
     { date: "2021", title: "First Dev Role", desc: "Started journey", grade: "V2" },
+  ];
+
+  const links = [
+    { icon: Download,  label: "Resume",   shape: JugHold,   href: "/resume.pdf" },
+    { icon: Instagram, label: "Instagram",shape: PinchHold, href: "https://instagram.com/_apekel_" },
+    { icon: Linkedin,  label: "LinkedIn", shape: SlopeHold, href: "https://www.linkedin.com/in/adilpekel" },
+    { icon: Github,    label: "GitHub",   shape: PocketHold,href: "https://github.com/AdilPekel" },
   ];
 
   // ---------- SVG Hold Shapes (with bolt holes & shading) ----------
@@ -212,7 +227,7 @@ export default function App() {
                     <div className="absolute inset-0 flex items-center justify-center">
                       <HoldShape
                         className={`w-12 h-12 transition-all duration-300 ${
-                          activeSection === item.id ? "text-white opacity-100" : "text-white/10 group-hover:text-white/20"
+                          activeSection === item.id ? "text-white opacity-100" : `text-white/10 ${holdHoverColor[item.id]} group-hover:opacity-100`
                         }`}
                       />
                     </div>
@@ -325,18 +340,15 @@ export default function App() {
 
           {/* Links grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-2xl mx-auto">
-            {[
-              { icon: Download, label: "Resume", shape: JugHold },
-              { icon: Instagram, label: "Instagram", shape: PinchHold },
-              { icon: Linkedin, label: "LinkedIn", shape: SlopeHold },
-              { icon: Github, label: "GitHub", shape: PocketHold },
-            ].map((link, i) => {
+            {links.map((link, i) => {
               const Icon = link.icon as any;
               const Shape = link.shape as any;
+              const isExternal = link.href.startsWith("http");
               return (
                 <a
                   key={i}
-                  href="#"
+                  href={link.href}
+                  {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                   className="relative group bg-white/[0.02] border border-white/5 p-8 rounded-2xl transition-all duration-500 hover:bg-white/[0.05] hover:border-white/10"
                 >
                   <div className="absolute inset-0 flex items-center justify-center opacity-10 group-hover:opacity-20 transition-opacity">
