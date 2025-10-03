@@ -16,6 +16,75 @@ import {
   X,
 } from "lucide-react";
 
+// === GLOBAL HAND CURSOR (module-scoped; won't remount every render) ===
+const HAND_SIZE = 48;
+let lastHandPos = {
+  x: typeof window !== "undefined" ? window.innerWidth / 2 : 0,
+  y: typeof window !== "undefined" ? window.innerHeight / 2 : 0,
+};
+
+function HandCursor({ grabbing = false }: { grabbing?: boolean }) {
+  const elRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const el = elRef.current!;
+    const paint = (x: number, y: number) => {
+      el.style.transform = `translate3d(${x - HAND_SIZE / 2}px, ${y - HAND_SIZE / 2}px, 0)`;
+    };
+
+    // draw at last known position on mount (no snap-to-center on re-renders)
+    paint(lastHandPos.x, lastHandPos.y);
+
+    const onMove = (e: PointerEvent | MouseEvent) => {
+      lastHandPos = { x: e.clientX, y: e.clientY };
+      paint(lastHandPos.x, lastHandPos.y);
+    };
+
+    window.addEventListener("pointermove", onMove as any, { passive: true });
+    window.addEventListener("mousemove", onMove as any, { passive: true });
+    window.addEventListener("mouseenter", onMove as any, { passive: true });
+    return () => {
+      window.removeEventListener("pointermove", onMove as any);
+      window.removeEventListener("mousemove", onMove as any);
+      window.removeEventListener("mouseenter", onMove as any);
+    };
+  }, []);
+
+  return (
+    <>
+      <div
+        ref={elRef}
+        className="fixed top-0 left-0 z-[9999] pointer-events-none select-none"
+        style={{ filter: "drop-shadow(0 8px 12px rgba(0,0,0,.25))" }}
+      >
+        <svg width={HAND_SIZE} height={HAND_SIZE} viewBox="0 0 64 64" aria-hidden>
+          {/* open hand */}
+          <g style={{ display: grabbing ? "none" : "block" }}>
+            <path d="M18 26c0-3 2-5 5-5s5 2 5 5v6" fill="none" stroke="#111827" strokeWidth="3" strokeLinecap="round" />
+            <path d="M28 24c0-3 2-5 5-5s5 2 5 5v8" fill="none" stroke="#111827" strokeWidth="3" strokeLinecap="round" />
+            <path d="M38 24c0-3 2-5 5-5s5 2 5 5v10" fill="none" stroke="#111827" strokeWidth="3" strokeLinecap="round" />
+            <path d="M16 34c0-3 2-5 5-5s5 2 5 5v2" fill="none" stroke="#111827" strokeWidth="3" strokeLinecap="round" />
+            <path d="M14 36c0 10 7 18 18 18s18-8 18-18v-6" fill="#fde68a" stroke="#b45309" strokeWidth="2" />
+          </g>
+          {/* grabbing hand */}
+          <g style={{ display: grabbing ? "block" : "none" }}>
+            <path d="M16 40c0 10 7 18 18 18s18-8 18-18v-4c0-5-4-9-9-9H25c-5 0-9 4-9 9z"
+                  fill="#fde68a" stroke="#b45309" strokeWidth="2" />
+            <path d="M22 32h8m-8 6h10m6-6h8m-2 6h4" stroke="#111827" strokeWidth="3" strokeLinecap="round" />
+          </g>
+        </svg>
+      </div>
+
+      <style>{`
+        @media (pointer: coarse), (prefers-reduced-motion: reduce) {
+          .app-cursor-none { cursor: auto !important; }
+          .hand-cursor-hide { display: none !important; }
+        }
+      `}</style>
+    </>
+  );
+}
+
 export default function App() {
   const [scrollY, setScrollY] = useState(0);
   const [activeSection, setActiveSection] = useState("home");
@@ -54,7 +123,6 @@ export default function App() {
   const navItems = [
     { id: "home", label: "Start", color: "from-emerald-400 to-emerald-500" },
     { id: "about", label: "About", color: "from-blue-400 to-blue-500" },
-    { id: "skills", label: "Skills", color: "from-fuchsia-400 to-fuchsia-500" },
     { id: "timeline", label: "Journey", color: "from-amber-400 to-amber-500" },
     { id: "contact", label: "Contact", color: "from-violet-400 to-violet-500" },
   ];
@@ -62,7 +130,6 @@ export default function App() {
   const holdHoverColor: Record<string, string> = {
     home:    "group-hover:text-emerald-400",
     about:   "group-hover:text-sky-400",
-    skills:  "group-hover:text-fuchsia-400",
     timeline:"group-hover:text-amber-300",
     contact: "group-hover:text-violet-400",
   };
@@ -70,19 +137,11 @@ export default function App() {
   const holdActiveColor: Record<string, string> = {
     home: "text-emerald-400",
     about: "text-sky-400",
-    skills: "text-fuchsia-400",
     timeline: "text-amber-300",
     contact: "text-violet-400",
   };
 
-  const skills = [
-    { name: "React", icon: Code },
-    { name: "Node.js", icon: Database },
-    { name: "UI/UX", icon: Palette },
-    { name: "Mobile", icon: Smartphone },
-    { name: "Web Dev", icon: Globe },
-    { name: "Performance", icon: Zap },
-  ];
+  // Skills section removed
 
   const timeline = [
     { date: "2024", title: "Senior Developer", desc: "Led team of 5 engineers", grade: "V7" },
@@ -195,31 +254,110 @@ export default function App() {
   // Hero background holds with parallax translate + spin
   const bgHolds = useMemo(
     () => [
-      { Comp: VolumeHold, left: "6%", top: "18%", size: 180, rot: -8, color: "rgba(147,197,253,0.06)", speed: 0.02, spin: 0.05 },
-      { Comp: JugHold, left: "18%", top: "32%", size: 140, rot: -4, color: "rgba(16,185,129,0.07)", speed: 0.05, spin: -0.07 },
-      { Comp: CrimpHold, left: "35%", top: "20%", size: 140, rot: 6, color: "rgba(250,204,21,0.06)", speed: 0.03, spin: 0.09 },
-      { Comp: ScrewOn, left: "12%", top: "55%", size: 90, rot: -2, color: "rgba(244,114,182,0.08)", speed: 0.06, spin: -0.12 },
-      { Comp: PinchHold, left: "74%", top: "22%", size: 150, rot: 10, color: "rgba(94,234,212,0.06)", speed: 0.02, spin: 0.04 },
-      { Comp: SlopeHold, left: "82%", top: "48%", size: 170, rot: -12, color: "rgba(209,213,219,0.06)", speed: 0.04, spin: -0.06 },
-      { Comp: PocketHold, left: "68%", top: "68%", size: 160, rot: -6, color: "rgba(167,139,250,0.07)", speed: 0.05, spin: 0.08 },
-      { Comp: ScrewOn, left: "58%", top: "12%", size: 80, rot: 4, color: "rgba(96,165,250,0.08)", speed: 0.03, spin: -0.1 },
-      { Comp: CrimpHold, left: "8%", top: "78%", size: 150, rot: -4, color: "rgba(251,191,36,0.06)", speed: 0.02, spin: 0.06 },
-      { Comp: JugHold, left: "44%", top: "70%", size: 170, rot: 2, color: "rgba(45,212,191,0.06)", speed: 0.04, spin: -0.05 },
-      { Comp: ScrewOn, left: "36%", top: "86%", size: 70, rot: 8, color: "rgba(248,113,113,0.08)", speed: 0.05, spin: 0.12 },
-      { Comp: PocketHold, left: "86%", top: "78%", size: 140, rot: 0, color: "rgba(147,197,253,0.06)", speed: 0.03, spin: -0.07 },
+      { Comp: VolumeHold, left: "6%",  top: "18%", size: 180, rot: -8,  baseColor: "rgba(147,197,253,0.06)", flashColor: "rgba(147,197,253,0.55)", speed: 0.02, spin: 0.05 },
+      { Comp: JugHold,    left: "18%", top: "32%", size: 140, rot: -4,  baseColor: "rgba(16,185,129,0.07)",  flashColor: "rgba(16,185,129,0.60)",  speed: 0.05, spin: -0.07 },
+      { Comp: CrimpHold,  left: "35%", top: "20%", size: 140, rot: 6,   baseColor: "rgba(250,204,21,0.06)",  flashColor: "rgba(250,204,21,0.60)",  speed: 0.03, spin: 0.09 },
+      { Comp: ScrewOn,    left: "12%", top: "55%", size: 90,  rot: -2,  baseColor: "rgba(244,114,182,0.08)", flashColor: "rgba(244,114,182,0.60)", speed: 0.06, spin: -0.12 },
+      { Comp: PinchHold,  left: "74%", top: "22%", size: 150, rot: 10,  baseColor: "rgba(94,234,212,0.06)",  flashColor: "rgba(94,234,212,0.50)",  speed: 0.02, spin: 0.04 },
+      { Comp: SlopeHold,  left: "82%", top: "48%", size: 170, rot: -12, baseColor: "rgba(209,213,219,0.06)", flashColor: "rgba(209,213,219,0.45)", speed: 0.04, spin: -0.06 },
+      { Comp: PocketHold, left: "68%", top: "68%", size: 160, rot: -6,  baseColor: "rgba(167,139,250,0.07)", flashColor: "rgba(167,139,250,0.55)", speed: 0.05, spin: 0.08 },
+      { Comp: ScrewOn,    left: "58%", top: "12%", size: 80,  rot: 4,   baseColor: "rgba(96,165,250,0.08)",  flashColor: "rgba(96,165,250,0.55)",  speed: 0.03, spin: -0.10 },
+      { Comp: CrimpHold,  left: "8%",  top: "78%", size: 150, rot: -4,  baseColor: "rgba(251,191,36,0.06)",  flashColor: "rgba(251,191,36,0.60)",  speed: 0.02, spin: 0.06 },
+      { Comp: JugHold,    left: "44%", top: "70%", size: 170, rot: 2,   baseColor: "rgba(45,212,191,0.06)",  flashColor: "rgba(45,212,191,0.55)",  speed: 0.04, spin: -0.05 },
+      { Comp: ScrewOn,    left: "36%", top: "86%", size: 70,  rot: 8,   baseColor: "rgba(248,113,113,0.08)", flashColor: "rgba(248,113,113,0.60)", speed: 0.05, spin: 0.12 },
+      { Comp: PocketHold, left: "86%", top: "78%", size: 140, rot: 0,   baseColor: "rgba(147,197,253,0.06)", flashColor: "rgba(147,197,253,0.55)", speed: 0.03, spin: -0.07 },
     ],
     []
   );
 
+  // --- Random flash config ---
+  const FLASH_ON_MS = 1000;            // how long a hold stays bright
+  const MIN_GAP_MS = 600;              // min time between flashes
+  const MAX_GAP_MS = 2000;             // max time between flashes
+
+  // Track which holds are flashing (by index)
+  const [flashing, setFlashing] = useState<Set<number>>(new Set());
+
+  useEffect(() => {
+    let mounted = true;
+    let scheduleId: number | undefined;
+
+    const scheduleNext = () => {
+      const gap = MIN_GAP_MS + Math.random() * (MAX_GAP_MS - MIN_GAP_MS);
+      scheduleId = window.setTimeout(triggerFlash, gap);
+    };
+
+    const triggerFlash = () => {
+      if (!mounted || bgHolds.length === 0) return;
+      const idx = Math.floor(Math.random() * bgHolds.length);
+
+      // turn one on
+      setFlashing(prev => {
+        const next = new Set(prev);
+        next.add(idx);
+        return next;
+      });
+
+      // turn it off after FLASH_ON_MS, then schedule the next one
+      window.setTimeout(() => {
+        if (!mounted) return;
+        setFlashing(prev => {
+          const next = new Set(prev);
+          next.delete(idx);
+          return next;
+        });
+        scheduleNext();
+      }, FLASH_ON_MS);
+    };
+
+    scheduleNext();
+    return () => { mounted = false; if (scheduleId) clearTimeout(scheduleId); };
+  }, [bgHolds.length]);
+
+  // --- Drag-to-scroll on holds ---
+  const DRAG_FACTOR = 1.4; // higher = faster scroll per pixel of drag
+  const DRAG_DIR = -1;
+
+  type DragState = { active: boolean; startY: number; startScroll: number; idx: number | null };
+  const [drag, setDrag] = useState<DragState>({ active: false, startY: 0, startScroll: 0, idx: null });
+
+  const startDrag = (idx: number) => (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0) return; // left click only
+    e.preventDefault();
+    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+    setDrag({ active: true, startY: e.clientY, startScroll: window.scrollY, idx });
+  };
+
+  useEffect(() => {
+    if (!drag.active) return;
+
+    const onMove = (e: PointerEvent) => {
+      const dy = (e.clientY - drag.startY) * DRAG_DIR; // ← apply direction
+      const next = drag.startScroll + dy * DRAG_FACTOR;
+      window.scrollTo({ top: next, behavior: "auto" });
+    };
+
+    const end = () => setDrag(d => ({ ...d, active: false, idx: null }));
+
+    window.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("pointerup", end);
+    window.addEventListener("pointercancel", end);
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", end);
+      window.removeEventListener("pointercancel", end);
+    };
+  }, [drag.active, drag.startY, drag.startScroll]);
+
   return (
-    <div className="min-h-screen text-white">
+    <div className="min-h-screen text-white use-hand-cursor">
       {/* ===== NAV ===== */}
       <nav className="fixed top-0 w-full z-50 bg-gray-950/80 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-6xl mx-auto px-6 py-4">
           <div className="flex justify-between items-center">
             <div className="text-xl font-light tracking-wider">
-              <span className="text-white/90">ADIL</span>
-              <span className="text-emerald-400 ml-1">PEKEL</span>
+              <span className="text-white/90">A</span>
+              <span className="text-emerald-400">P</span>
             </div>
 
             {/* Desktop nav */}
@@ -273,25 +411,37 @@ export default function App() {
       {/* ===== HERO ===== */}
       <section id="home" className="min-h-screen flex items-center justify-center relative bg-gray-950">
         {/* Background holds with parallax + spin */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
+        <div className="absolute inset-0 overflow-hidden select-none">
           {bgHolds.map((h, i) => {
             const T = (h as any).speed * scrollY;
             const rot = (h as any).rot + scrollY * (h as any).spin;
             const Comp: any = (h as any).Comp;
+            const isFlashing = flashing.has(i);
+            const grabbed = drag.active && drag.idx === i;
+
             return (
               <div
                 key={i}
-                className="absolute"
+                onPointerDown={startDrag(i)}
+                className="absolute pointer-events-auto transition-all duration-200"
                 style={{
                   left: (h as any).left,
                   top: (h as any).top,
-                  color: (h as any).color,
+                  color: isFlashing ? (h as any).flashColor : (h as any).baseColor,
                   width: (h as any).size,
                   height: (h as any).size,
-                  transform: `translateY(${T}px) rotate(${rot}deg)`,
+                  transform: `translateY(${T}px) rotate(${rot}deg)${grabbed ? " scale(1.06)" : ""}`,
                   transformOrigin: "50% 50%",
                   willChange: "transform",
+                  filter: grabbed
+                    ? "drop-shadow(0 8px 14px rgba(0,0,0,.28))"
+                    : isFlashing
+                    ? "saturate(1.5) contrast(1.1)"
+                    : "none",
+                  // prevents browser's default touch panning from fighting with our drag scroll
+                  touchAction: "none",
                 }}
+                aria-label="Climbing hold"
               >
                 <Comp className="w-full h-full" />
               </div>
@@ -325,10 +475,10 @@ export default function App() {
                 src={headshotSrc}
                 onError={() => setImgFailed(true)}
                 alt="Adil Pekel headshot"
-                className="w-36 h-36 md:w-44 md:h-44 rounded-full object-cover border border-white/10 shadow-[0_0_0_4px_rgba(255,255,255,0.03)]"
+                className="w-70 h-70 md:w-85 md:h-85 rounded-full object-cover border border-white/10 shadow-[0_0_0_4px_rgba(255,255,255,0.03)]"
               />
             ) : (
-              <div className="w-36 h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-br from-emerald-400/20 to-cyan-400/20 border border-white/10 flex items-center justify-center text-white/70 font-medium">
+              <div className="w-70 h-70 md:w-85 md:h-85 rounded-full bg-gradient-to-br from-emerald-400/20 to-cyan-400/20 border border-white/10 flex items-center justify-center text-white/70 font-medium">
                 AP
               </div>
             )}
@@ -369,33 +519,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* ===== SKILLS ===== */}
-      <section id="skills" className="py-24 bg-white/[0.01]">
-        <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-3xl md:text-4xl font-thin text-center mb-4">
-            <span className="bg-gradient-to-r from-yellow-400 to-orange-400 text-gradient">Skills</span>
-          </h2>
-        <p className="text-center text-white/40 text-sm uppercase tracking-widest mb-12">Technical Grip Strength</p>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
-            {skills.map((skill, i) => {
-              const Icon = skill.icon as any;
-              const HoldShape = holdShapes[i % holdShapes.length] as any;
-              return (
-                <div key={i} className="relative group">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <HoldShape className="w-32 h-32 text-white/10 group-hover:text-white/20 transition-all duration-500 group-hover:scale-110" />
-                  </div>
-                  <div className="relative z-10 bg-white/[0.02] border border-white/5 p-8 rounded-2xl transition-all duration-500 hover:bg-white/[0.05] hover:border-white/10">
-                    <Icon className="w-6 h-6 mx-auto mb-3 text-white/60 group-hover:text-white/90 transition-colors" />
-                    <h3 className="text-sm text-center text-white/70 font-light tracking-wide">{skill.name}</h3>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+      {/* Skills section removed */}
 
       {/* ===== TIMELINE (wavy route) ===== */}
       <section id="timeline" className="py-24 relative">
@@ -503,7 +627,23 @@ export default function App() {
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
         }
+
+        /* Force hide OS cursor across the app */
+        .use-hand-cursor, .use-hand-cursor * { cursor: none !important; }
+
+        /* Allow I-beam where it matters */
+        .use-hand-cursor input,
+        .use-hand-cursor textarea,
+        .use-hand-cursor [contenteditable="true"] {
+          cursor: text !important;
+        }
+
+        /* Disable custom cursor on touch / reduced motion */
+        @media (pointer: coarse), (prefers-reduced-motion: reduce) {
+          .use-hand-cursor, .use-hand-cursor * { cursor: auto !important; }
+        }
       `}</style>
+      <HandCursor grabbing={drag.active} />
     </div>
   );
 }
