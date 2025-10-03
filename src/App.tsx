@@ -22,7 +22,7 @@ export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // headshot path (served from /public)
-  const headshotSrc = "/images/headshot.jpeg";
+  const headshotSrc = "/images/headshot.jpg";
   const [imgFailed, setImgFailed] = useState(false);
 
   useEffect(() => {
@@ -65,6 +65,14 @@ export default function App() {
     skills:  "group-hover:text-fuchsia-400",
     timeline:"group-hover:text-amber-300",
     contact: "group-hover:text-violet-400",
+  };
+
+  const holdActiveColor: Record<string, string> = {
+    home: "text-emerald-400",
+    about: "text-sky-400",
+    skills: "text-fuchsia-400",
+    timeline: "text-amber-300",
+    contact: "text-violet-400",
   };
 
   const skills = [
@@ -227,15 +235,11 @@ export default function App() {
                     <div className="absolute inset-0 flex items-center justify-center">
                       <HoldShape
                         className={`w-12 h-12 transition-all duration-300 ${
-                          activeSection === item.id ? "text-white opacity-100" : `text-white/10 ${holdHoverColor[item.id]} group-hover:opacity-100`
+                          activeSection === item.id ? `${holdActiveColor[item.id]} opacity-100` : `text-white/10 ${holdHoverColor[item.id]} group-hover:opacity-100`
                         }`}
                       />
                     </div>
-                    <span
-                      className={`relative z-10 text-xs font-medium tracking-wide transition-all duration-300 ${
-                        activeSection === item.id ? "text-white" : "text-white/60 group-hover:text-white/90"
-                      }`}
-                    >
+                    <span className="relative z-10 text-xs font-medium tracking-wide text-white">
                       {item.label}
                     </span>
                   </button>
