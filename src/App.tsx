@@ -70,7 +70,7 @@ export default function App() {
   // Skills section removed
 
   const timeline = [
-    { date: "2026", title: "SWE Intern", desc: "RIOT Games", grade: "V9" },
+    { date: "202X", title: "SWE Intern", desc: "Coming Soon...", grade: "V9" },
     { date: "2028", title: "AI Masters", desc: "UT Austin", grade: "V7" },
     { date: "2026", title: "CS Bachelors", desc: "Arizona State University", grade: "V5" },
     { date: "2024", title: "IT Intern", desc: "CS&S Computer Systems", grade: "V3" },
@@ -406,7 +406,7 @@ export default function App() {
           >
             <span className="font-fun tip-wiggle text-xs md:text-sm text-emerald-200/90
                             px-3 py-1">
-              * click & hold a hold to drag *
+              * click & drag a climbing hold *
             </span>
           </div>
         </div>
