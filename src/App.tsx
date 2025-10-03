@@ -6,12 +6,6 @@ import {
   Github,
   Mail,
   ArrowDown,
-  Code,
-  Database,
-  Palette,
-  Smartphone,
-  Globe,
-  Zap,
   Menu,
   X,
 } from "lucide-react";
