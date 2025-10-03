@@ -17,6 +17,7 @@ export default function App() {
 
   // headshot path (served from /public)
   const headshotSrc = "/images/headshot.jpg";
+  const gymSrc = "/images/BPSL.webp"; // place your photo at public/images/gym.jpg
   const [imgFailed, setImgFailed] = useState(false);
 
   useEffect(() => {
@@ -400,7 +401,7 @@ export default function App() {
           })}
           {/* hint: click & drag */}
           <div
-            style={{ left: `${hintPos.left}%`, top: `${hintPos.top}%`, transform: `translate(400%, -1200%)` }}
+            style={{ left: `${hintPos.left}%`, top: `${hintPos.top}%`, transform: `translate(-50%, -50%)` }}
             className="absolute z-20 pointer-events-none select-none"
           >
             <span className="font-fun tip-wiggle text-xs md:text-sm text-emerald-200/90
@@ -451,9 +452,9 @@ export default function App() {
           </div>
           <div className="max-w-2xl mx-auto text-center mb-12">
             <p className="text-white/70 leading-relaxed font-light">
-              Full-stack developer with a passion for creating elegant, innovative solutions. Each project is a unique
-              problem to solve—finding the right approach, testing different routes, and pushing through to reach new
-              heights.
+              I’m a Computer Science student at Arizona State University planning a master’s in AI. 
+              I’m focused on applied machine learning with a strong interest in game development using reinforcement learning. 
+              I’m looking for internships or research where I can train decision-making models, build reliable ML pipelines, and apply AI to real gameplay and tools.
             </p>
           </div>
 
@@ -515,11 +516,7 @@ export default function App() {
                 strokeWidth="1.2"
               />
             </svg>
-
             {timeline.map((item, i) => {
-              const HoldShape = holdShapes[(i + 2) % holdShapes.length] as any;
-              const xOffsets = [-28, 22, -20, 18];
-              const markerOffset = xOffsets[i % xOffsets.length];
               const leftRight = i % 2 === 0 ? "flex-row" : "flex-row-reverse";
               return (
                 <div key={i} className={`flex items-center mb-16 ${leftRight}`}>
@@ -537,17 +534,39 @@ export default function App() {
                       <span className="text-xs text-white/30">{item.date}</span>
                     </div>
                   </div>
-
-                  {/* Hold marker offset along the rope */}
-                  <div className="relative z-10 p-2" style={{ transform: `translateX(${markerOffset}px)` }}>
-                    <HoldShape className="w-10 h-10 text-white/20 transition-all duration-500 hover:text-white/40 hover:scale-110" />
-                  </div>
-
-                  <div className="w-1/2" />
                 </div>
               );
             })}
           </div>
+        </div>
+      </section>
+
+      {/* ===== HOME GYM ===== */}
+      <section id="gym" className="py-4">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="text-3xl md:text-4xl font-thin text-center mb-4">
+            <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 text-gradient">
+              Bouldering Gym
+            </span>
+          </h2>
+
+          <p className="text-center text-white/60 text-sm md:text-base max-w-3xl mx-auto mb-8">
+            If you couldn’t tell from the theme already, I love climbing.
+            If you want to come and connect,
+            I’m usually always at AZBP.
+          </p>
+
+          <figure className="relative max-w-3xl mx-auto group">
+            <img
+              src={gymSrc}
+              alt="My home bouldering gym"
+              className="w-full h-72 md:h-[420px] object-cover rounded-2xl
+                        border border-white/5 shadow-[0_10px_30px_rgba(0,0,0,0.35)]"
+            />
+            {/* subtle top-to-bottom fade for depth on dark theme */}
+            <div className="pointer-events-none absolute inset-0 rounded-2xl
+                            bg-gradient-to-t from-black/30 to-transparent opacity-60"></div>
+          </figure>
         </div>
       </section>
 
@@ -567,14 +586,14 @@ export default function App() {
               </div>
               <div className="relative z-10 bg-white/[0.02] border border-white/5 p-8 rounded-2xl">
                 <a
-                  href="mailto:contact@adilpekel.com"
+                  href="mailto:apekel@asu.edu"
                   className="inline-flex items-center gap-3 px-7 py-2.5 bg-gradient-to-r from-emerald-400 to-cyan-400 text-gray-950 rounded-full hover:shadow-lg hover:shadow-emerald-400/20 transition-all duration-300 group"
                 >
                   <Mail className="w-4 h-4" />
                   <span className="font-medium text-sm">Get In Touch</span>
                 </a>
-
-                <p className="text-white/40 text-sm mt-8 font-light">Ready to tackle any problem together</p>
+                <p className="text-white/40 text-sm mt-2 font-light">apekel@asu.edu</p>
+                <p className="text-white/40 text-sm mt-2 font-light">Ready to tackle any problem together</p>
               </div>
             </div>
           </div>
@@ -582,7 +601,7 @@ export default function App() {
       </section>
 
       {/* ===== FOOTER ===== */}
-      <footer className="py-8 border-t border-white/5">
+      <footer className="py-8 border-t border-white/5 bg-white/[0.02]">
         <div className="max-w-6xl mx-auto px-6 text-center">
           <p className="text-white/20 text-xs font-light tracking-wide">© 2025 Adil Pekel · Built with technique and tons of beta ;)</p>
         </div>
