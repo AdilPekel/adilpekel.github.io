@@ -171,7 +171,7 @@ export default function App() {
   const holdShapes = [JugHold, CrimpHold, SlopeHold, PinchHold, PocketHold, VolumeHold];
 
   const links = [
-    { icon: Download,  label: "Resume",   shape: JugHold,   href: "/resume.pdf" },
+    { icon: Download,  label: "Resume",   shape: JugHold,   href: "/public/resume.pdf" },
     { icon: Instagram, label: "Instagram",shape: PinchHold, href: "https://instagram.com/_apekel_" },
     { icon: Linkedin,  label: "LinkedIn", shape: SlopeHold, href: "https://www.linkedin.com/in/adilpekel" },
     { icon: Github,    label: "GitHub",   shape: PocketHold,href: "https://github.com/AdilPekel" },
