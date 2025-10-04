@@ -18,6 +18,7 @@ export default function App() {
   // headshot path (served from /public)
   const headshotSrc = "/images/headshot.jpg";
   const gymSrc = "/images/BPSL.webp"; // place your photo at public/images/gym.jpg
+  const resumeHref = `${import.meta.env.BASE_URL}resume.pdf`;
   const [imgFailed, setImgFailed] = useState(false);
 
   useEffect(() => {
@@ -171,7 +172,7 @@ export default function App() {
   const holdShapes = [JugHold, CrimpHold, SlopeHold, PinchHold, PocketHold, VolumeHold];
 
   const links = [
-    { icon: Download,  label: "Resume",   shape: JugHold,   href: "/public/resume.pdf" },
+    { icon: Download,  label: "Resume",   shape: JugHold,   href: resumeHref },
     { icon: Instagram, label: "Instagram",shape: PinchHold, href: "https://instagram.com/_apekel_" },
     { icon: Linkedin,  label: "LinkedIn", shape: SlopeHold, href: "https://www.linkedin.com/in/adilpekel" },
     { icon: Github,    label: "GitHub",   shape: PocketHold,href: "https://github.com/AdilPekel" },
