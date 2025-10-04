@@ -193,88 +193,24 @@ export default function App() {
     "group-hover:text-violet-400",
   ];
 
-  const [isTouch, setIsTouch] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const check = () => {
-      const coarse = typeof window !== "undefined" && window.matchMedia?.("(pointer: coarse)").matches;
-      const hasTouch = typeof window !== "undefined" && ("ontouchstart" in window || (navigator as any).maxTouchPoints > 0);
-      setIsTouch(Boolean(coarse || hasTouch));
-      setIsMobile(typeof window !== "undefined" ? window.innerWidth < 768 : false);
-    };
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
-
   // Hero background holds with parallax translate + spin
-  const bgHolds = useMemo(() => {
-    // Desktop/tablet: keep your original layout
-    if (!isMobile && !isTouch) {
-      return [
-        { Comp: VolumeHold, left: "6%",  top: "18%", size: 180, rot: -8,  baseColor: "rgba(147,197,253,0.06)", flashColor: "rgba(147,197,253,0.55)", speed: 0.02, spin: 0.05 },
-        { Comp: JugHold,    left: "18%", top: "32%", size: 140, rot: -4,  baseColor: "rgba(16,185,129,0.07)",  flashColor: "rgba(16,185,129,0.60)",  speed: 0.05, spin: -0.07 },
-        { Comp: CrimpHold,  left: "35%", top: "20%", size: 140, rot: 6,   baseColor: "rgba(250,204,21,0.06)",  flashColor: "rgba(250,204,21,0.60)",  speed: 0.03, spin: 0.09 },
-        { Comp: ScrewOn,    left: "12%", top: "55%", size: 90,  rot: -2,  baseColor: "rgba(244,114,182,0.08)", flashColor: "rgba(244,114,182,0.60)", speed: 0.06, spin: -0.12 },
-        { Comp: PinchHold,  left: "74%", top: "22%", size: 150, rot: 10,  baseColor: "rgba(94,234,212,0.06)",  flashColor: "rgba(94,234,212,0.50)",  speed: 0.02, spin: 0.04 },
-        { Comp: SlopeHold,  left: "82%", top: "48%", size: 170, rot: -12, baseColor: "rgba(209,213,219,0.06)", flashColor: "rgba(209,213,219,0.45)", speed: 0.04, spin: -0.06 },
-        { Comp: PocketHold, left: "68%", top: "68%", size: 160, rot: -6,  baseColor: "rgba(167,139,250,0.07)", flashColor: "rgba(167,139,250,0.55)", speed: 0.05, spin: 0.08 },
-        { Comp: ScrewOn,    left: "58%", top: "12%", size: 80,  rot: 4,   baseColor: "rgba(96,165,250,0.08)",  flashColor: "rgba(96,165,250,0.55)",  speed: 0.03, spin: -0.10 },
-        { Comp: CrimpHold,  left: "8%",  top: "78%", size: 150, rot: -4,  baseColor: "rgba(251,191,36,0.06)",  flashColor: "rgba(251,191,36,0.60)",  speed: 0.02, spin: 0.06 },
-        { Comp: JugHold,    left: "44%", top: "70%", size: 170, rot: 2,   baseColor: "rgba(45,212,191,0.06)",  flashColor: "rgba(45,212,191,0.55)",  speed: 0.04, spin: -0.05 },
-        { Comp: ScrewOn,    left: "36%", top: "86%", size: 70,  rot: 8,   baseColor: "rgba(248,113,113,0.08)", flashColor: "rgba(248,113,113,0.60)", speed: 0.05, spin: 0.12 },
-        { Comp: PocketHold, left: "86%", top: "78%", size: 140, rot: 0,   baseColor: "rgba(147,197,253,0.06)", flashColor: "rgba(147,197,253,0.55)", speed: 0.03, spin: -0.07 },
-      ];
-    }
-
-
-    // Mobile/touch: fewer, left-biased, evenly spaced holds
-    const shapes = [JugHold, CrimpHold, SlopeHold, PinchHold, PocketHold, ScrewOn];
-    const palette = [
-      { base: "rgba(147,197,253,0.06)", flash: "rgba(147,197,253,0.55)" }, // sky
-      { base: "rgba(16,185,129,0.07)",  flash: "rgba(16,185,129,0.60)"  }, // emerald
-      { base: "rgba(250,204,21,0.06)",  flash: "rgba(250,204,21,0.60)"  }, // amber
-      { base: "rgba(94,234,212,0.06)",  flash: "rgba(94,234,212,0.50)"  }, // teal
-      { base: "rgba(167,139,250,0.07)", flash: "rgba(167,139,250,0.55)" }, // violet
-      { base: "rgba(209,213,219,0.06)", flash: "rgba(209,213,219,0.45)" }, // gray
-    ];
-
-    const COUNT = 6;                 // ← fewer holds
-    const LEFT_MIN = 6;              // %
-    const LEFT_MAX = 32;             // % keep to the left
-    const TOP_MIN = 18;              // %
-    const TOP_MAX = 86;              // %
-
-    const out: any[] = [];
-    for (let i = 0; i < COUNT; i++) {
-      // even vertical spacing (no clumping), small jitter
-      const slice = i / (COUNT - 1 || 1);
-      const top = TOP_MIN + slice * (TOP_MAX - TOP_MIN) + (Math.random() * 4 - 2);
-
-      const left = LEFT_MIN + Math.random() * (LEFT_MAX - LEFT_MIN);
-      const size = 110 + Math.random() * 40;
-      const rot = -12 + Math.random() * 24;
-      const speed = 0.02 + Math.random() * 0.03;
-      const spin = (Math.random() < 0.5 ? -1 : 1) * (0.03 + Math.random() * 0.05);
-
-      const Comp = shapes[i % shapes.length];
-      const col  = palette[i % palette.length];
-
-      out.push({
-        Comp,
-        left: `${left}%`,
-        top:  `${top}%`,
-        size,
-        rot,
-        baseColor: col.base,
-        flashColor: col.flash,
-        speed,
-        spin,
-      });
-    }
-    return out;
-  }, [isMobile, isTouch]);
+  const bgHolds = useMemo(
+    () => [
+      { Comp: VolumeHold, left: "6%",  top: "18%", size: 180, rot: -8,  baseColor: "rgba(147,197,253,0.06)", flashColor: "rgba(147,197,253,0.55)", speed: 0.02, spin: 0.05 },
+      { Comp: JugHold,    left: "18%", top: "32%", size: 140, rot: -4,  baseColor: "rgba(16,185,129,0.07)",  flashColor: "rgba(16,185,129,0.60)",  speed: 0.05, spin: -0.07 },
+      { Comp: CrimpHold,  left: "35%", top: "20%", size: 140, rot: 6,   baseColor: "rgba(250,204,21,0.06)",  flashColor: "rgba(250,204,21,0.60)",  speed: 0.03, spin: 0.09 },
+      { Comp: ScrewOn,    left: "12%", top: "55%", size: 90,  rot: -2,  baseColor: "rgba(244,114,182,0.08)", flashColor: "rgba(244,114,182,0.60)", speed: 0.06, spin: -0.12 },
+      { Comp: PinchHold,  left: "74%", top: "22%", size: 150, rot: 10,  baseColor: "rgba(94,234,212,0.06)",  flashColor: "rgba(94,234,212,0.50)",  speed: 0.02, spin: 0.04 },
+      { Comp: SlopeHold,  left: "82%", top: "48%", size: 170, rot: -12, baseColor: "rgba(209,213,219,0.06)", flashColor: "rgba(209,213,219,0.45)", speed: 0.04, spin: -0.06 },
+      { Comp: PocketHold, left: "68%", top: "68%", size: 160, rot: -6,  baseColor: "rgba(167,139,250,0.07)", flashColor: "rgba(167,139,250,0.55)", speed: 0.05, spin: 0.08 },
+      { Comp: ScrewOn,    left: "58%", top: "12%", size: 80,  rot: 4,   baseColor: "rgba(96,165,250,0.08)",  flashColor: "rgba(96,165,250,0.55)",  speed: 0.03, spin: -0.10 },
+      { Comp: CrimpHold,  left: "8%",  top: "78%", size: 150, rot: -4,  baseColor: "rgba(251,191,36,0.06)",  flashColor: "rgba(251,191,36,0.60)",  speed: 0.02, spin: 0.06 },
+      { Comp: JugHold,    left: "44%", top: "70%", size: 170, rot: 2,   baseColor: "rgba(45,212,191,0.06)",  flashColor: "rgba(45,212,191,0.55)",  speed: 0.04, spin: -0.05 },
+      { Comp: ScrewOn,    left: "36%", top: "86%", size: 70,  rot: 8,   baseColor: "rgba(248,113,113,0.08)", flashColor: "rgba(248,113,113,0.60)", speed: 0.05, spin: 0.12 },
+      { Comp: PocketHold, left: "86%", top: "78%", size: 140, rot: 0,   baseColor: "rgba(147,197,253,0.06)", flashColor: "rgba(147,197,253,0.55)", speed: 0.03, spin: -0.07 },
+    ],
+    []
+  );
 
   // --- Random flash config ---
   const FLASH_ON_MS = 1000;            // how long a hold stays bright
@@ -285,6 +221,7 @@ export default function App() {
   const [flashing, setFlashing] = useState<Set<number>>(new Set());
 
   useEffect(() => {
+    if (isTouch || isMobile) return; 
     let mounted = true;
     let scheduleId: number | undefined;
 
@@ -328,8 +265,8 @@ export default function App() {
   const [drag, setDrag] = useState<DragState>({ active: false, startY: 0, startScroll: 0, idx: null });
 
   const startDrag = (idx: number) => (e: React.PointerEvent<HTMLDivElement>) => {
-    if (isTouch || e.pointerType === "touch") return;
-    if (e.button !== 0) return;
+    if (isTouch || isMobile || e.pointerType === "touch") return;
+    if (e.button !== 0) return; // left click only
     e.preventDefault();
     (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
     setDrag({ active: true, startY: e.clientY, startScroll: window.scrollY, idx });
@@ -362,6 +299,21 @@ export default function App() {
     const top  = 30 + Math.random() * 50; // 30%..80% (below nav)
     return { left, top };
   });
+
+  const [isTouch, setIsTouch] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => {
+      const coarse = window.matchMedia?.("(pointer: coarse)").matches;
+      const hasTouch = "ontouchstart" in window || (navigator as any).maxTouchPoints > 0;
+      setIsTouch(Boolean(coarse || hasTouch));
+      setIsMobile(window.innerWidth < 768);
+    };
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   return (
     <div className="min-h-screen text-white">
@@ -424,60 +376,57 @@ export default function App() {
 
       {/* ===== HERO ===== */}
       <section id="home" className="min-h-screen flex items-center justify-center relative bg-gray-950">
-        {/* Background holds with parallax + spin */}
-        <div className="absolute inset-0 overflow-hidden select-none">
-          {bgHolds.map((h, i) => {
-            const T   = (h as any).speed * scrollY;
-            const rot = (h as any).rot + scrollY * (h as any).spin;
-            const Comp: any = (h as any).Comp;
+        {!isTouch && !isMobile && (
+          <div className="absolute inset-0 overflow-hidden select-none">
+            {bgHolds.map((h, i) => {
+              const T   = (h as any).speed * scrollY;
+              const rot = (h as any).rot + scrollY * (h as any).spin;
+              const Comp: any = (h as any).Comp;
 
-            const isFlashing = flashing.has(i);
-            const grabbed    = drag.active && drag.idx === i;
+              const isFlashing = flashing.has(i);
+              const grabbed    = drag.active && drag.idx === i;
 
-            // color priority: grabbed (bright) > flashing > base
-            const displayColor = grabbed
-              ? (h as any).flashColor
-              : (isFlashing ? (h as any).flashColor : (h as any).baseColor);
+              const displayColor = grabbed
+                ? (h as any).flashColor
+                : (isFlashing ? (h as any).flashColor : (h as any).baseColor);
 
-            return (
-              <div
-                key={i}
-                onPointerDown={startDrag(i)}
-                className="hold-drag absolute pointer-events-auto transition-all duration-200"
-                style={{
-                  left:  (h as any).left,
-                  top:   (h as any).top,
-                  color: displayColor,
-                  width: (h as any).size,
-                  height:(h as any).size,
-                  transform: `translateY(${T}px) rotate(${rot}deg)${grabbed ? " scale(1.06)" : ""}`,
-                  transformOrigin: "50% 50%",
-                  willChange: "transform",
-                  zIndex: grabbed ? 20 : 1,
-                  filter: grabbed
-                    ? "saturate(1.75) contrast(1.15) drop-shadow(0 8px 14px rgba(0,0,0,.28))"
-                    : (isFlashing ? "saturate(1.5) contrast(1.1)" : "none"),
-                  touchAction: isTouch ? "auto" : "none",
-                  pointerEvents: isTouch ? "none" : "auto",
-                  cursor: isTouch ? "default" : undefined,
-                }}
-                aria-label="Climbing hold"
-              >
-                <Comp className="w-full h-full" />
-              </div>
-            );
-          })}
-          {/* hint: click & drag */}
-          <div
-            style={{ left: `${hintPos.left}%`, top: `${hintPos.top}%`, transform: `translate(-50%, -50%)` }}
-            className="absolute z-20 pointer-events-none select-none"
-          >
-            <span className="font-fun tip-wiggle text-xs md:text-sm text-emerald-200/90
-                            px-3 py-1">
-              * click & drag a climbing hold *
-            </span>
+              return (
+                <div
+                  key={i}
+                  onPointerDown={startDrag(i)}
+                  className="hold-drag absolute pointer-events-auto transition-all duration-200"
+                  style={{
+                    left:  (h as any).left,
+                    top:   (h as any).top,
+                    color: displayColor,
+                    width: (h as any).size,
+                    height:(h as any).size,
+                    transform: `translateY(${T}px) rotate(${rot}deg)${grabbed ? " scale(1.06)" : ""}`,
+                    transformOrigin: "50% 50%",
+                    willChange: "transform",
+                    zIndex: grabbed ? 20 : 1,
+                    filter: grabbed
+                      ? "saturate(1.75) contrast(1.15) drop-shadow(0 8px 14px rgba(0,0,0,.28))"
+                      : (isFlashing ? "saturate(1.5) contrast(1.1)" : "none"),
+                    touchAction: "none",
+                  }}
+                  aria-label="Climbing hold"
+                >
+                  <Comp className="w-full h-full" />
+                </div>
+              );
+            })}
+            <div
+              style={{ left: `${hintPos.left}%`, top: `${hintPos.top}%`, transform: `translate(-50%, -50%)` }}
+              className="absolute z-20 pointer-events-none select-none"
+            >
+              <span className="font-fun tip-wiggle text-xs md:text-sm text-emerald-200/90 px-3 py-1">
+                * click & drag a climbing hold *
+              </span>
+            </div>
           </div>
-        </div>
+        )}
+
         <div className="max-w-6xl mx-auto px-6 text-center z-10">
           <h1 className="text-5xl md:text-7xl font-thin tracking-wide mb-4">
             <span className="text-white/90">ADIL</span>
