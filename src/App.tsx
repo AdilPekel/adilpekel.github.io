@@ -212,6 +212,20 @@ export default function App() {
     []
   );
 
+  const [canHover, setCanHover] = useState(true);
+  
+  useEffect(() => {
+    const mq = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const update = () => setCanHover(mq.matches);
+    update();
+    mq.addEventListener?.('change', update);
+    window.addEventListener('resize', update);
+    return () => {
+      mq.removeEventListener?.('change', update);
+      window.removeEventListener('resize', update);
+    };
+  }, []);
+
   // --- Random flash config ---
   const FLASH_ON_MS = 1000;            // how long a hold stays bright
   const MIN_GAP_MS = 600;              // min time between flashes
@@ -221,27 +235,24 @@ export default function App() {
   const [flashing, setFlashing] = useState<Set<number>>(new Set());
 
   useEffect(() => {
-    if (!canHover) return;
+    if (!canHover) return; // don't schedule flashes on touch devices
+  
     let mounted = true;
     let scheduleId: number | undefined;
-
+  
     const scheduleNext = () => {
       const gap = MIN_GAP_MS + Math.random() * (MAX_GAP_MS - MIN_GAP_MS);
       scheduleId = window.setTimeout(triggerFlash, gap);
     };
-
+  
     const triggerFlash = () => {
       if (!mounted || bgHolds.length === 0) return;
       const idx = Math.floor(Math.random() * bgHolds.length);
-
-      // turn one on
       setFlashing(prev => {
         const next = new Set(prev);
         next.add(idx);
         return next;
       });
-
-      // turn it off after FLASH_ON_MS, then schedule the next one
       window.setTimeout(() => {
         if (!mounted) return;
         setFlashing(prev => {
@@ -252,10 +263,10 @@ export default function App() {
         scheduleNext();
       }, FLASH_ON_MS);
     };
-
+  
     scheduleNext();
     return () => { mounted = false; if (scheduleId) clearTimeout(scheduleId); };
-  }, [bgHolds.length]);
+  }, [bgHolds.length, canHover]); // ← add canHover here
 
   // --- Drag-to-scroll on holds ---
   const DRAG_FACTOR = 1.4; // higher = faster scroll per pixel of drag
@@ -299,20 +310,6 @@ export default function App() {
     const top  = 30 + Math.random() * 50; // 30%..80% (below nav)
     return { left, top };
   });
-
-  const [canHover, setCanHover] = useState(true);
-  
-  useEffect(() => {
-    const mq = window.matchMedia('(hover: hover) and (pointer: fine)');
-    const update = () => setCanHover(mq.matches);
-    update();
-    mq.addEventListener?.('change', update);
-    window.addEventListener('resize', update);
-    return () => {
-      mq.removeEventListener?.('change', update);
-      window.removeEventListener('resize', update);
-    };
-  }, []);
 
   return (
     <div className="min-h-screen text-white">
@@ -381,9 +378,6 @@ export default function App() {
               const T   = (h as any).speed * scrollY;
               const rot = (h as any).rot + scrollY * (h as any).spin;
               const Comp: any = (h as any).Comp;
-            
-              touchAction: canHover ? "none" : "auto",
-              pointerEvents: canHover ? "auto" : "none",
 
               const isFlashing = flashing.has(i);
               const grabbed    = drag.active && drag.idx === i;
@@ -410,7 +404,8 @@ export default function App() {
                     filter: grabbed
                       ? "saturate(1.75) contrast(1.15) drop-shadow(0 8px 14px rgba(0,0,0,.28))"
                       : (isFlashing ? "saturate(1.5) contrast(1.1)" : "none"),
-                    touchAction: "none",
+                    touchAction: canHover ? "none" : "auto",
+                    pointerEvents: canHover ? "auto" : "none",
                   }}
                   aria-label="Climbing hold"
                 >
@@ -651,7 +646,6 @@ export default function App() {
             0%, 100% { transform: rotate(-5deg); }
             50%      { transform: rotate(5deg); }
           }
-        }
       `}</style>
     </div>
   );
