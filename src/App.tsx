@@ -221,7 +221,7 @@ export default function App() {
   const [flashing, setFlashing] = useState<Set<number>>(new Set());
 
   useEffect(() => {
-    if (isTouch || isMobile) return; 
+    if (!canHover) return;
     let mounted = true;
     let scheduleId: number | undefined;
 
@@ -265,7 +265,7 @@ export default function App() {
   const [drag, setDrag] = useState<DragState>({ active: false, startY: 0, startScroll: 0, idx: null });
 
   const startDrag = (idx: number) => (e: React.PointerEvent<HTMLDivElement>) => {
-    if (isTouch || isMobile || e.pointerType === "touch") return;
+    if (!canHover || e.pointerType === "touch") return; // no drag on phones/tablets
     if (e.button !== 0) return; // left click only
     e.preventDefault();
     (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
@@ -300,19 +300,18 @@ export default function App() {
     return { left, top };
   });
 
-  const [isTouch, setIsTouch] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-
+  const [canHover, setCanHover] = useState(true);
+  
   useEffect(() => {
-    const check = () => {
-      const coarse = window.matchMedia?.("(pointer: coarse)").matches;
-      const hasTouch = "ontouchstart" in window || (navigator as any).maxTouchPoints > 0;
-      setIsTouch(Boolean(coarse || hasTouch));
-      setIsMobile(window.innerWidth < 768);
+    const mq = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const update = () => setCanHover(mq.matches);
+    update();
+    mq.addEventListener?.('change', update);
+    window.addEventListener('resize', update);
+    return () => {
+      mq.removeEventListener?.('change', update);
+      window.removeEventListener('resize', update);
     };
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
   }, []);
 
   return (
@@ -376,12 +375,15 @@ export default function App() {
 
       {/* ===== HERO ===== */}
       <section id="home" className="min-h-screen flex items-center justify-center relative bg-gray-950">
-        {!isTouch && !isMobile && (
+        {canHover && (
           <div className="absolute inset-0 overflow-hidden select-none">
             {bgHolds.map((h, i) => {
               const T   = (h as any).speed * scrollY;
               const rot = (h as any).rot + scrollY * (h as any).spin;
               const Comp: any = (h as any).Comp;
+            
+              touchAction: canHover ? "none" : "auto",
+              pointerEvents: canHover ? "auto" : "none",
 
               const isFlashing = flashing.has(i);
               const grabbed    = drag.active && drag.idx === i;
